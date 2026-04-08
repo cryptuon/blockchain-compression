@@ -1,0 +1,50 @@
+site_name: blockchain-compression
+site_description: High-performance lossless compression for blockchain data, built in Rust
+site_url: https://cryptuon.github.io/blockchain-compression
+repo_url: https://github.com/cryptuon/blockchain-compression
+repo_name: cryptuon/blockchain-compression
+
+theme:
+  name: material
+  palette:
+    - scheme: default
+      primary: deep purple
+      accent: amber
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+    - scheme: slate
+      primary: deep purple
+      accent: amber
+      toggle:
+        icon: material/brightness-4
+        name: Switch to light mode
+  features:
+    - navigation.tabs
+    - navigation.sections
+    - navigation.top
+    - content.code.copy
+    - search.highlight
+
+nav:
+  - Home: index.md
+  - Getting Started: getting-started.md
+  - Installation: installation.md
+  - Usage Guide: usage-guide.md
+  - Presets: presets.md
+  - API Reference: api-reference.md
+  - Examples: examples.md
+  - Architecture: architecture.md
+  - Contributing: contributing.md
+
+markdown_extensions:
+  - pymdownx.highlight:
+      anchor_linenums: true
+  - pymdownx.superfences
+  - pymdownx.tabbed:
+      alternate_style: true
+  - admonition
+  - pymdownx.details
+  - toc:
+      permalink: true
+  - tables
