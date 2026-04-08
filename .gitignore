@@ -1,0 +1,30 @@
+# Build artifacts
+/target
+*.o
+*.d
+*.rlib
+*.dylib
+*.so
+*.dll
+
+# Compiled binaries
+calculate_pattern_ids
+test_simple_zstd
+
+# Editor and IDE files
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Environment files
+.env
+.env.*
+
+# Documentation build output
+documentation/site/
