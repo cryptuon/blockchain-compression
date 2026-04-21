@@ -328,13 +328,23 @@ mod tests {
     #[test]
     fn test_enhanced_ctw_basic() {
         let mut ctw = EnhancedCTW::new();
-        let test_data = b"Hello, world! This is a test of Enhanced CTW compression.";
+        // Use a corpus large enough that compression framing overhead is amortized.
+        // At ~58 bytes the zstd stream header alone makes `compressed < input`
+        // an unrealistic assertion -- this used to cause a flaky-looking failure
+        // on a correct implementation.
+        let test_data = b"Hello, world! This is a test of Enhanced CTW compression."
+            .repeat(32);
 
-        let compressed = ctw.compress(test_data).unwrap();
+        let compressed = ctw.compress(&test_data).unwrap();
         let decompressed = ctw.decompress(&compressed).unwrap();
 
         assert_eq!(test_data.as_slice(), decompressed.as_slice());
-        assert!(compressed.len() < test_data.len());
+        assert!(
+            compressed.len() < test_data.len(),
+            "expected compression on {}-byte repetitive input, got {} bytes",
+            test_data.len(),
+            compressed.len()
+        );
     }
 
     #[test]
