@@ -1,6 +1,6 @@
 site_name: blockchain-compression
 site_description: High-performance lossless compression for blockchain data, built in Rust
-site_url: https://blockchain-compression.docs.cryptuon.com/
+site_url: https://docs.cryptuon.com/blockchain-compression/
 repo_url: https://github.com/cryptuon/blockchain-compression
 repo_name: cryptuon/blockchain-compression
 
