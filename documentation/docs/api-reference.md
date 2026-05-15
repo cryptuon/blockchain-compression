@@ -32,9 +32,13 @@ Extends `CompressionStrategy` with pattern management:
 
 ```rust
 pub trait PatternCompressionStrategy: CompressionStrategy {
-    fn add_pattern(&mut self, pattern: PatternInfo) -> Result<(), Self::Error>;
+    type Pattern: Clone + Send + Sync;
+    type Config: Clone + Send + Sync;
+
+    fn with_config(config: Self::Config) -> Self;
+    fn add_pattern(&mut self, pattern: Self::Pattern) -> Result<(), Self::Error>;
     fn remove_pattern(&mut self, pattern_id: &str) -> Result<(), Self::Error>;
-    fn patterns(&self) -> Vec<PatternInfo>;
+    fn pattern_info(&self) -> HashMap<String, PatternInfo>;
     fn optimize_patterns(&mut self) -> Result<(), Self::Error>;
 }
 ```
@@ -45,8 +49,13 @@ For multi-stage compression pipelines:
 
 ```rust
 pub trait PipelineCompressionStrategy: CompressionStrategy {
-    fn add_stage(&mut self, stage: Box<dyn CompressionStrategy<Error = Self::Error>>);
-    fn stages(&self) -> usize;
+    type Stage: CompressionStrategy;
+
+    fn add_stage(&mut self, stage: Self::Stage) -> Result<(), Self::Error>;
+    fn remove_stage(&mut self, index: usize) -> Result<Self::Stage, Self::Error>;
+    fn stage_count(&self) -> usize;
+    fn stage_stats(&self) -> Vec<CompressionStats>;
+    fn set_stage_enabled(&mut self, index: usize, enabled: bool) -> Result<(), Self::Error>;
 }
 ```
 
@@ -56,9 +65,10 @@ For compressors that learn from data:
 
 ```rust
 pub trait AdaptiveCompressionStrategy: CompressionStrategy {
-    fn train(&mut self, training_data: &[Vec<u8>]) -> Result<(), Self::Error>;
+    fn train(&mut self, training_data: &[&[u8]]) -> Result<(), Self::Error>;
+    fn learning_progress(&self) -> f64;
     fn save_model(&self) -> Result<Vec<u8>, Self::Error>;
-    fn load_model(&mut self, model: &[u8]) -> Result<(), Self::Error>;
+    fn load_model(&mut self, model_data: &[u8]) -> Result<(), Self::Error>;
     fn learning_info(&self) -> LearningInfo;
 }
 ```
@@ -98,14 +108,14 @@ pub struct CompressionStats {
 
 ```rust
 pub enum CompressionError {
-    InvalidFormat { message: String },
-    UnsupportedVersion { version: String, supported: String },
+    InvalidFormat,
+    UnsupportedVersion { version: String },
     Configuration { message: String },
     Pattern { message: String },
     Pipeline { stage: usize, message: String },
     Training { message: String },
-    Io { message: String },
-    Serialization { message: String },
+    Io(std::io::Error),
+    Serialization(String),
     Internal { message: String },
 }
 ```
